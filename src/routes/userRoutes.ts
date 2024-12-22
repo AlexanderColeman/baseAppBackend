@@ -1,19 +1,36 @@
 import { Router } from "express";
+import { PrismaClient } from "@prisma/client";
 
 const router = Router();
+const prisma = new PrismaClient();
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const { name, email } = req.body;
-    res.send(`User ${name} with email ${email} created.`);
+
+    try {
+        const result = await prisma.user.create({
+            data: {
+                name: name,
+                email: email,
+            }
+        }); 
+        
+        res.json(result);
+    } catch (e) { 
+        res.status(400).json({error: "Error creating user."});
+    }
 });
   
-router.get('/', (req, res) => { 
-    res.send('User list');
+router.get('/', async (req, res) => { 
+    const allUsers = await prisma.user.findMany();
+    res.json(allUsers);
 });
 
-router.get('/:id', (req, res) => { 
+router.get('/:id', async (req, res) => { 
     const { id } = req.params;
-    res.send(`User with id ${id} found.`);
+    const user = await prisma.user.findUnique({ where: { id: id } });
+
+    res.json(user);
 });
 
 router.put('/:id', (req, res) => { 
