@@ -1,11 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import { Router } from 'express';
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 
 const router = Router();
-let reservations: any[] = [];
-const JWT_SECRET = "mysecretkey";
 
 router.get('/reservations', (req: Request, res: Response) => {
     res.send('Hello World from Express and');
