@@ -11,7 +11,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.726.1",
     "@prisma/client": "^6.1.0",
+    "dotnet": "^1.1.4",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2"
   },

@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import jwt from 'jsonwebtoken'; 
-import { env } from "node:process";
+import { sendEmail } from "../services/emailService";
 
 const EMAIL_TOKEN_EXPIRATION_MINUTES = 10;
 const API_TOKEN_EXPIRATION_MINUTES = 12;
-const JWT_SECRET = "mysecretkey";
+const JWT_SECRET =  process.env.JWT_SECRET;
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -15,8 +15,10 @@ function generateEmailToken(): string {
 }
 
 function generateAuthToken(tokenId: string): string {
+    if (!JWT_SECRET) {
+        throw new Error('JWT_SECRET is not defined in the environment variables.');
+    }
     const jwtPayload = { tokenId };
-
     return jwt.sign(jwtPayload, JWT_SECRET, { 
         algorithm: 'HS256',
         noTimestamp: true
@@ -43,6 +45,7 @@ router.post('/login', async (req, res) => {
                 }
             }
         });
+        await sendEmail(email, emailToken);
         res.sendStatus(200);
     } catch (error) {
         res.status(400).json({ error: 'User already exists' });
